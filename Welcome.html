@@ -1,23 +1,124 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <link href='https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons' rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-</head>
-<body>
-  <div id="app">
-    <v-app>
-      <v-content>
-        <v-container>Hello world</v-container>
-      </v-content>
-    </v-app>
-  </div>
- 
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
-  <script>
-    new Vue({ el: '#app' })
-  </script>
-</body>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css"
+      rel="stylesheet"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui"
+    />
+    <style>
+      #output {
+        width: 50%;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <v-app>
+        
+        <v-toolbar dark color="primary">
+          <v-toolbar-title class="white--text">Vuetify Tutorial</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn icon> <v-icon>refresh</v-icon> </v-btn>
+        </v-toolbar>
+
+        <v-content>
+          <v-container fluid fill-height light-blue lighten-2>
+            <v-layout column>
+              <v-flex>
+                <v-layout id="controls" row red lighten-2>
+                  <v-flex xs6>
+                    <v-slider
+                      :label="`Number of users ${userCount}`"
+                      v-model="userCount"
+                      step="1"
+                      max="50"
+                    ></v-slider>
+                  </v-flex>
+                  <v-btn color="success" @click="getUser">Fetch</v-btn>
+                  <v-btn color="success" @click="resetArray">Reset</v-btn>
+                </v-layout>
+                <v-layout id="table" row yellow lighten-2 align-start>
+                  <table witdth="100%">
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Login</th>
+                      <th>Phone</th>
+                      <th>D.O.B.</th>
+                      <th>Photo</th>
+                    </tr>
+                    <template v-for="u in users">
+                      <tr
+                        @mouseover="showImage(u.picture.large)"
+                        @mouseleave="clearImage"
+                      >
+                        <td class="pa-2">
+                          {{ u.name.first }} {{ u.name.last }}
+                        </td>
+                        <td class="pa-2">{{ u.email }}</td>
+                        <td class="pa-2">{{ u.login.username }}</td>
+                        <td class="pa-2">{{ u.cell }}</td>
+                        <td class="pa-2">{{ u.dob.date.substr(0, 10) }}</td>
+                        <td class="pa-2">
+                          <img v-bind:src="u.picture.thumbnail" />
+                        </td>
+                      </tr>
+                    </template>
+                  </table>
+                  <img v-bind:src="img" />
+                </v-layout>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-content>
+        <v-footer height="auto" color="primary lighten-1">
+            <v-layout justify-center row wrap></v-layout>
+              <v-flex dark color="primary" py-3 text-xs-center white--text xs12>
+                &copy;2018 — <strong>Jacob Walton</strong>
+              </v-flex>
+            </v-layout>
+          </v-footer>
+      </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
+    <script>
+      new Vue({
+        el: "#app",
+        data: {
+          userCount: 1,
+          users: [],
+          img: ""
+        },
+        methods: {
+          getUser() {
+            fetch(`https://randomuser.me/api?results=${this.userCount}`)
+              .then(r => r.json())
+              .then(u => {
+                this.users = u.results;
+              });
+          },
+          resetArray() {
+            this.users = [];
+          },
+          showImage(url) {
+            this.img = url;
+          },
+          clearImage() {
+            this.img = "";
+          }
+        }
+      });
+    </script>
+  </body>
 </html>
